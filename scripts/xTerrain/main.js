@@ -1,19 +1,19 @@
 ;;"请注意，这是一份正式版，预估生命周期约为1~2m";;
 ;;"一切权力归云梦所有";;
-;;"https://github.com/xboyMinemc/FUCKFakePlayerPack";;
+;;"https://github.com/xboyMinemc/FightFakePlayerPack";;
 import * as GameTest from "@minecraft/server-gametest";
 import { 
 	world,
   Location,
   BlockLocation,
-  // EntityQueryOptions,
-  // EntityRaycastOptions,
   BlockRaycastOptions
   } from "@minecraft/server";
-  
 import { xBoyBlocklist } from "../lib/xboyLists/xboyBlocks.js";   //获取特殊方块列表
 // import { SimulatedPlayer, Test } from "mojang-gametest";;"不懂";;
-import qrcode from '../qrcode-terminal/mod.js'
+import qrcode from "../qrcode-terminal/mod.js";
+import world_better_because_of_xboy from "../lib/xboyEvents/index";
+       world_better_because_of_xboy(world);
+
 const xboySign = "#xboySimSign#";                   ;;"假人标签";;"苦役证";;
 const xboySimCmdHead = "假人";                      ;;" 命令头 ";;
 const 挖掘标识符 = "挖掘标识符";
@@ -47,7 +47,7 @@ let cmd_ = function(where,what,cmd_String){
     }
 };
 
-let 工具人们 = [undefined];;;;;;;;;;;;;;;;;;;;;
+let 工具人们 = [undefined];;;;;;;;;;;;
 let tickWaitTimes = 20*60*60*24*365;;
 let xboyTestsList = {};;;;;;;;;;;;;;;
 let xboyTooleesList = {};;;;;;;;;;;;;
@@ -461,17 +461,18 @@ world.events.beforeChat.subscribe( M_event => {
 //   } 
 // }
 
+
 class EventSignal {
-  listeners = new Set();
+  listeners = new Set()
   subscribe(listener) {
-      this.listeners.add(listener);
-      return listener;
+      this.listeners.add(listener)
+      return listener
   }
   unsubscribe(listener) {
-      this.listeners.delete(listener);
+      this.listeners.delete(listener)
   }
   trigger(ev) {
-      this.listeners.forEach((listener) => listener(ev));
+      this.listeners.forEach((listener) => listener(ev))
   }
 }
 
@@ -480,20 +481,6 @@ class EventSignal {
 const queue = {};
 
 
-world.events.entityDeadByHurt = new EventSignal();
-
-
-
-
-world.events.entityHurt.subscribe(event=>{
-  event.hurtEntity.getComponent("minecraft:health").current<=0
-  ?
-  world.events.entityDeadByHurt.trigger(event)
-  :
-  0
-})
-
-const test = (event)=>event.hurtEntity.dimension.runCommandAsync("me "+(event.hurtEntity.name??event.hurtEntity.nameTag??event.hurtEntity.typeId)+"被杀死"+"\u000a触发自事件world.events.entityDeadByHurt" )
 
 // world.events.entityDeadByHurt.subscribe(test)
 
@@ -508,84 +495,11 @@ const test = (event)=>event.hurtEntity.dimension.runCommandAsync("me "+(event.hu
 // })
 // "use strict"
 
-world.events.fishHookDespawned = new EventSignal();
 //然后触发直接
 
 const xby可爱捏yes = true;
-// world.events.fishHookDespawned = {}
-// queue.fishHookDespawned = []
-queue.fishHookDespawned_HookArray = new Map();
-queue.fishHookDespawned_TickArray = [];
-// world.events.fishHookDespawned.subscribe = (_)=>queue.fishHookDespawned.push(_)
-
-let playerFishingArray = [];
-
-world.events.itemUse.subscribe(event=>{
-  event.item.typeId === "minecraft:fishing_rod"
-  ?
-  (
-    playerFishingArray.push(event.source)
-  // event.source.runCommandAsync("me "+(event.source.rotation.x.toFixed(3))+"#"+(event.source.rotation.y.toFixed(3)) )
-  )
-  :
-  0
-})
-const around =(v,r)=> v>-r && v<r;
-world.events.entityCreate.subscribe(event=>{
-  event.entity.typeId === "minecraft:fishing_hook"
-  ?
-  ( 
-    
-    // playerFishingArray.forEach(playerFishingArray=>event.entity.runCommandAsync("me $$抛竿"
-    // +event.entity.typeId 
-    // +around(event.entity.location.x-playerFishingArray.location.x-playerFishingArray.velocity.x,0.3)+"#"
-    // +around(event.entity.location.y-playerFishingArray.location.y-playerFishingArray.velocity.y-1.32,0.001)+"#"
-    // +around(event.entity.location.z-playerFishingArray.location.z-playerFishingArray.velocity.z,0.3)+"#"
-    // +around(playerFishingArray.rotation.y+event.entity.rotation.y,3)
-    // )),
-    
-
-    // playerFishingArray.forEach(playerFishingArray=>event.entity.runCommandAsync("me $$抛竿"
-    // +event.entity.typeId 
-    // +(event.entity.location.x-playerFishingArray.location.x-playerFishingArray.velocity.x)+"#"
-    // +(event.entity.location.y-playerFishingArray.location.y-playerFishingArray.velocity.y-1.32)+"#"
-    // +(event.entity.location.z-playerFishingArray.location.z-playerFishingArray.velocity.z)+"#"
-    // +(playerFishingArray.rotation.y+event.entity.rotation.y)
-    // )),
-
-    
-    // queue.fishHookDespawned_HookArray.set(event.entity.id,event.entity.getEntitiesFromViewVector({maxDistance:1})[0])   //旧的方案
-    queue.fishHookDespawned_HookArray.set(
-      event.entity.id,
-      playerFishingArray.find(playerFishingArray=>
-            around(event.entity.location.x-playerFishingArray.location.x-playerFishingArray.velocity.x,0.3) 
-        &&  around(event.entity.location.y-playerFishingArray.location.y-playerFishingArray.velocity.y-1.32,0.001) 
-        &&  around(event.entity.location.z-playerFishingArray.location.z-playerFishingArray.velocity.z,0.3) 
-    // && around(playerFishingArray.rotation.y+event.entity.rotation.y,3) //误差过大，放弃。设计上应该保留上一刻的玩家rotation数据，但，又不是不能用
-    ))
-  )
-  :
-  0
-})
 
 
-
-
-world.events.tick.subscribe((t)=>{
-  playerFishingArray = [];
-  queue.fishHookDespawned_TickArray.length?queue.fishHookDespawned_TickArray.pop()():0;
-  const fishHookArray = Array.from(world.getDimension("overworld").getEntities({type:"minecraft:fishing_hook"}))
-  const HookIdArray = fishHookArray.map(Hook=>Hook.id)
-  queue.fishHookDespawned_HookArray.forEach((Fisher,HookId)=>HookIdArray.includes(HookId)?0:(world.events.fishHookDespawned.trigger({HookId:HookId,Fisher:Fisher}),queue.fishHookDespawned_HookArray.delete(HookId)))
-  
-  //写完感觉效率逆天，但想了想，能够有几个钩子，这又不是海鲜市场，满池子钩子里没有一滴水
-})
-
-
-world.events.fishHookDespawned.subscribe(event=>{
-  // world.getDimension("overworld").runCommandAsync("me ##鱼钩销毁\u000a鱼钩id=>"+event.HookId+"\u000a发起者id=>"+event.Fisher.id);
-  工具人们.forEach(_=> _==undefined?0:_.id===event.Fisher.id?queue.fishHookDespawned_TickArray.push(()=>(_.useItemInSlot(0)?_.stopUsingItem():0)):0)
-})
 
 
 
